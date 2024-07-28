@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,6 +71,12 @@ public class SocialMediaController {
         return ResponseEntity.ok(messages);
     }
 
+    @GetMapping("messages/{messageId}")
+    public ResponseEntity<Message> getMessageByIdHandler(@PathVariable int messageId) {
+        Message message = messageService.getMessageById(messageId);
+
+        return ResponseEntity.ok(message);
+    }
 
 
     @ExceptionHandler(UsernameAlreadyExistsException.class)

@@ -31,6 +31,10 @@ public class MessageService {
         return messageRepository.findAll();
     }
 
+    public Message getMessageById(int messageId) {
+        return messageRepository.findById(messageId).orElse(null);
+    }
+
     private boolean massageTextValid(Message message) {
         if(!message.getMessageText().isEmpty() && 
             message.getMessageText().length() <= 255 &&
