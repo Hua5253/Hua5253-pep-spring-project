@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.entity.Message;
 import com.example.exception.InvalidMessageTextException;
+import com.example.exception.InvalidMessageUpdateException;
 import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 
@@ -33,6 +34,36 @@ public class MessageService {
 
     public Message getMessageById(int messageId) {
         return messageRepository.findById(messageId).orElse(null);
+    }
+
+    // if the messageId sent doesn't exist in database return null, else return the message that is deleted
+    public Message deleteMessageById(int messageId) {
+        Message message = getMessageById(messageId);
+        
+        if(message != null) {
+            messageRepository.deleteById(messageId);
+            return message;
+        }
+            
+        return null;
+    }
+
+    // return the number of row affected.
+    public int updateMessageById(int messageId, String newMessageText) {
+        if (newMessageText == null || newMessageText.isBlank() || newMessageText.length() > 255) {
+            throw new InvalidMessageUpdateException("Invalid message text");
+        }
+
+        Message message = messageRepository.findById(messageId)
+            .orElseThrow(() -> new InvalidMessageUpdateException("Message ID not found"));
+
+        message.setMessageText(newMessageText);
+        messageRepository.save(message);
+        return 1; 
+    }
+
+    public List<Message> getMessagesByUser(int accountId) {
+        return messageRepository.findAllByPostedBy(accountId);
     }
 
     private boolean massageTextValid(Message message) {

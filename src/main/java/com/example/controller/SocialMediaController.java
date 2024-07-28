@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,7 @@ import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.exception.IncorrectPasswordException;
 import com.example.exception.InvalidMessageTextException;
+import com.example.exception.InvalidMessageUpdateException;
 import com.example.exception.InvalidPasswordException;
 import com.example.exception.InvalidUsernameException;
 import com.example.exception.UsernameAlreadyExistsException;
@@ -78,6 +81,25 @@ public class SocialMediaController {
         return ResponseEntity.ok(message);
     }
 
+    @DeleteMapping("messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageByIdHandler(@PathVariable int messageId) {
+        Message message = messageService.deleteMessageById(messageId);
+        if(message != null) return ResponseEntity.ok(1);
+        return ResponseEntity.ok(null);
+    }
+
+    @PatchMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> updateMessageHandler(@PathVariable int messageId, @RequestBody String messageText) {
+        int rowsUpdated = messageService.updateMessageById(messageId, messageText);
+        return ResponseEntity.ok(rowsUpdated);
+    }
+
+    @GetMapping("accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getMessagesByUserHandler(@PathVariable int accountId) {
+        List<Message> messages = messageService.getMessagesByUser(accountId);
+        return ResponseEntity.ok(messages);
+    }
+
 
     @ExceptionHandler(UsernameAlreadyExistsException.class)
     public ResponseEntity<String> handleUsernameAlreadyExists(UsernameAlreadyExistsException e) {
@@ -106,6 +128,11 @@ public class SocialMediaController {
 
     @ExceptionHandler(InvalidMessageTextException.class) 
     public ResponseEntity<String> handleInvalidMessageText(InvalidMessageTextException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidMessageUpdateException.class)
+    public ResponseEntity<String> handleInvalidMessageUpdate(InvalidMessageUpdateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
