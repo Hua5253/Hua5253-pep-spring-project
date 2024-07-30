@@ -50,7 +50,7 @@ public class MessageService {
 
     // return the number of row affected.
     public int updateMessageById(int messageId, String newMessageText) {
-        if (newMessageText == null || newMessageText.isBlank() || newMessageText.length() > 255) {
+        if (newMessageText == null || newMessageText.isEmpty() || newMessageText.length() > 255) {
             throw new InvalidMessageUpdateException("Invalid message text");
         }
 

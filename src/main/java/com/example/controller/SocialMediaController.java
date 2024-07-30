@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.entity.MessageDTO;
 import com.example.exception.IncorrectPasswordException;
 import com.example.exception.InvalidMessageTextException;
 import com.example.exception.InvalidMessageUpdateException;
@@ -89,8 +90,8 @@ public class SocialMediaController {
     }
 
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity<Integer> updateMessageHandler(@PathVariable int messageId, @RequestBody String messageText) {
-        int rowsUpdated = messageService.updateMessageById(messageId, messageText);
+    public ResponseEntity<Integer> updateMessageHandler(@PathVariable int messageId, @RequestBody MessageDTO messageDTO) {
+        int rowsUpdated = messageService.updateMessageById(messageId, messageDTO.getMessageText());
         return ResponseEntity.ok(rowsUpdated);
     }
 
